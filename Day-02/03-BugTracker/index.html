@@ -32,33 +32,61 @@
     <script src="angular.js"></script>
     <script>
         var bugTrackerApp = angular.module("bugTrackerApp",[]);
+
+        function Bug(defaults){
+            this.title = defaults.title || '';
+            this.isClosed = defaults.isClosed || false;
+        }
+        Bug.prototype.toggle = function(){
+            this.isClosed = !this.isClosed;
+        }
+
         bugTrackerApp.controller("bugsController", function($scope){
             $scope.newBug= "";
             $scope.bugs = [
-              { title : "Unable to login", isClosed : false},
-              { title : "Application crashes frequently", isClosed : false},
-              { title : "Server communication fails", isClosed : false}
+              new Bug({ title : "Unable to login", isClosed : false}),
+              new Bug({ title : "Application crashes frequently", isClosed : false}),
+              new Bug({ title : "Server communication fails", isClosed : false})
             ];
             $scope.addBug = function(){
-                $scope.bugs.push($scope.newBug);
+                var newBug = new Bug({
+                    title : $scope.newBug,
+                    isClosed : false
+                });
+                $scope.bugs.push(newBug);
             };
             $scope.toggleBug = function(bug){
-                bug.isClosed = !bug.isClosed;
+                bug.toggle();
             };
-        })
+            $scope.removeClosed = function(){
+                for(var i=$scope.bugs.length -1; i>=0; i--){
+                    var bug = $scope.bugs[i];
+                    if (bug.isClosed){
+                        $scope.bugs.splice(i,1);
+                    }
+                }
+            };
+            $scope.getClosedCount = function(){
+                return $scope.bugs.filter(function(bug){
+                    return bug.isClosed;
+                }).length;
+            }
+        });
     </script>
 </head>
 <body ng-app="bugTrackerApp">
     <h1>Bug Tracker</h1>
     <div class="content" ng-controller="bugsController">
-
+        <h3>
+            <span class="closed">{{getClosedCount()}}</span> / <span>{{bugs.length}}</span>
+        </h3>
 
         <label for="">Bug :</label>
         <input type="text" ng-model="newBug">
         <input type="button" value="Add New" ng-click="addBug()">
-        <input type="button" value="Remove Closed">
+        <input type="button" value="Remove Closed" ng-click="removeClosed()">
         <ol>
-            <li ng-repeat="bug in bugs" ng-click="toggleBug(bug)" ng-class="{closed : bug.isClosed}">{{bug}}</li>
+            <li ng-repeat="bug in bugs" ng-click="toggleBug(bug)" ng-class="{closed : bug.isClosed}">{{bug.title}}</li>
         </ol>
     </div>
 </body>
