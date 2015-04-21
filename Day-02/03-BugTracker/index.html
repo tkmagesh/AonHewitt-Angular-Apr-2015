@@ -29,18 +29,36 @@
     */
 
     </script>
+    <script src="angular.js"></script>
+    <script>
+        var bugTrackerApp = angular.module("bugTrackerApp",[]);
+        bugTrackerApp.controller("bugsController", function($scope){
+            $scope.newBug= "";
+            $scope.bugs = [
+              { title : "Unable to login", isClosed : false},
+              { title : "Application crashes frequently", isClosed : false},
+              { title : "Server communication fails", isClosed : false}
+            ];
+            $scope.addBug = function(){
+                $scope.bugs.push($scope.newBug);
+            };
+            $scope.toggleBug = function(bug){
+                bug.isClosed = !bug.isClosed;
+            };
+        })
+    </script>
 </head>
-<body>
+<body ng-app="bugTrackerApp">
     <h1>Bug Tracker</h1>
-    <div class="content">
+    <div class="content" ng-controller="bugsController">
+
+
         <label for="">Bug :</label>
-        <input type="text" name="" id="">
-        <input type="button" value="Add New">
+        <input type="text" ng-model="newBug">
+        <input type="button" value="Add New" ng-click="addBug()">
         <input type="button" value="Remove Closed">
         <ol>
-            <li>Bug - 1</li>
-            <li class="closed">Bug - 2</li>
-            <li>Bug - 3</li>
+            <li ng-repeat="bug in bugs" ng-click="toggleBug(bug)" ng-class="{closed : bug.isClosed}">{{bug}}</li>
         </ol>
     </div>
 </body>
