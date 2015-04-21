@@ -6,5 +6,5 @@ function add(){
     }
     return arguments.length <= 1
         ? parseArg(arguments[0])
-        : parseArg(arguments[0]) + add(arguments.slice(1));
+        : parseArg(arguments[0]) + add([].slice.call(arguments,1));
 }
