@@ -103,6 +103,11 @@
         });
     }
 
+        $(function(){
+            window.calculator = new SalaryCalculator();
+            var view1 = new SalaryCalculatorView($("#view1"), calculator);
+            var view2 = new SalaryCalculatorView($("#view2"), calculator);
+        });
     </script>
 </head>
 <body>
