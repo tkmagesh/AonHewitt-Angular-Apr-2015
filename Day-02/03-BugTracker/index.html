@@ -33,15 +33,29 @@
     <script>
         var bugTrackerApp = angular.module("bugTrackerApp",[]);
 
-        function Bug(defaults){
-            this.title = defaults.title || '';
-            this.isClosed = defaults.isClosed || false;
-        }
-        Bug.prototype.toggle = function(){
-            this.isClosed = !this.isClosed;
-        }
+        bugTrackerApp.factory("Bug", function(){
+            function Bug(defaults){
+                this.title = defaults.title || '';
+                this.isClosed = defaults.isClosed || false;
+            }
+            Bug.prototype.toggle = function(){
+                this.isClosed = !this.isClosed;
+            }
+            return Bug;
+        });
 
-        bugTrackerApp.controller("bugsController", function($scope){
+        bugTrackerApp.filter('trimText', function(){
+            return function(data, acceptableLength){
+
+                acceptableLength = acceptableLength || 20;
+
+                return data.length > acceptableLength
+                    ? data.substr(0,acceptableLength) + "..."
+                    : data;
+            }
+        });
+
+        bugTrackerApp.controller("bugsController", function($scope, Bug){
             $scope.newBug= "";
             $scope.bugs = [
               new Bug({ title : "Unable to login", isClosed : false}),
@@ -78,15 +92,23 @@
     <h1>Bug Tracker</h1>
     <div class="content" ng-controller="bugsController">
         <h3>
-            <span class="closed">{{getClosedCount()}}</span> / <span>{{bugs.length}}</span>
+            <span class="closed">{{(bugs | filter:{isClosed : true}).length}}</span> / <span>{{bugs.length}}</span>
         </h3>
-
+        <hr>
+        <label for="">Search :</label>
+        <input type="text" ng-model='searchBug.title'>
+        <input type="checkbox" ng-model='searchBug.isClosed'>Closed?</input>
+        <a href="#" ng-click='searchBug.isClosed=undefined'>Clear Closed!</a>
+        <hr>
         <label for="">Bug :</label>
         <input type="text" ng-model="newBug">
         <input type="button" value="Add New" ng-click="addBug()">
         <input type="button" value="Remove Closed" ng-click="removeClosed()">
         <ol>
-            <li ng-repeat="bug in bugs" ng-click="toggleBug(bug)" ng-class="{closed : bug.isClosed}">{{bug.title}}</li>
+            <li
+                ng-repeat="bug in bugs | filter:searchBug"
+                ng-click="toggleBug(bug)"
+                ng-class="{closed : bug.isClosed}">{{bug.title | trimText:30}}</li>
         </ol>
     </div>
 </body>
