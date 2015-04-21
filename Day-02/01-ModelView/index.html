@@ -21,43 +21,83 @@
 
     //Model
     function SalaryCalculator(){
-        this.basic = 0;
-        this.hra = 0;
-        this.da = 0;
-        this.tax = 0;
-        this.salary = 0;
+        var _data = {
+            basic : 0,
+            hra : 0,
+            da : 0,
+            tax : 0,
+            salary : 0
+        };
+        this.get = function(attrName){
+            return _data[attrName];
+        }
+        this.set = function(attrName, value){
+            _data[attrName]= value;
+            //trigger change notification for 'attrName'
+            triggerChangeFor(attrName);
+        };
+        function triggerChangeFor(attrName){
+            var listenerFns = _events[attrName] || [];
+            for(var i=0; i<listenerFns.length; i++)
+                listenerFns[i]();
+        }
+
+        var _events = { };
+
+        this.addEventListener = function(attrName, listenerFn){
+            _events[attrName] = _events[attrName] || [];
+            _events[attrName].push(listenerFn);
+        };
+        this.removeEventListener = function(attrName, listenerFn){
+            //Homework  - fill in the blanks
+        };
     }
     SalaryCalculator.prototype.calculate = function(){
-        var gross = this.basic + this.hra + this.da;
-        var net = gross * ((100-this.tax)/100);
-        this.salary = net;
+        var gross = this.get('basic') + this.get('hra') + this.get('da');
+        var net = gross * ((100-this.get('tax'))/100);
+        this.set('salary', net);
     };
 
     //View
     $(function(){
         window.calculator = new SalaryCalculator();
 
+        calculator.addEventListener('salary', function(){
+            $("#divResult").html(calculator.get('salary'));
+        });
+        calculator.addEventListener('basic', function(){
+            $("#txtBasic").val(calculator.get('basic'));
+        });
+        calculator.addEventListener('hra', function(){
+            $("#txtHra").val(calculator.get('hra'));
+        });
+        calculator.addEventListener('da', function(){
+            $("#txtDa").val(calculator.get('da'));
+        });
+        calculator.addEventListener('tax', function(){
+            $("#spanTax").html(calculator.get('tax'));
+            $("#rangeTax").val(calculator.get('tax'));
+        });
+
+
         $("#txtBasic").change(function(){
-            calculator.basic = parseInt(this.value, 10);
+            calculator.set('basic', parseInt(this.value, 10));
         });
         $("#txtHra").change(function(){
-           calculator.hra = parseInt(this.value, 10);
+           calculator.set('hra', parseInt(this.value, 10));
         });
         $("#txtDa").change(function(){
-           calculator.da = parseInt(this.value, 10);
+           calculator.set('da', parseInt(this.value, 10));
         });
         $("#rangeTax").change(function(){
-           calculator.tax = parseInt(this.value, 10);
+           calculator.set('tax', parseInt(this.value, 10));
         });
         $("#btnCalculate").click(function(){
-            $("#divResult").html(calculator.salary);
             calculator.calculate();
 
         });
-       $("#rangeTax").change(function(){
-           $("#spanTax").html(this.value);
-       });
-    })
+
+    });
     </script>
 </head>
 <body>
