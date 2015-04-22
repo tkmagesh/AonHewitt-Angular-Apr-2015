@@ -32,3 +32,20 @@ var calculator = (function(){
         }
     }
 })();
+
+//Using Promise
+function add(x,y){
+    var promise = new Promise(function(resolve, reject){
+       setTimeout(function(){
+           console.log("returning result");
+           var result = x + y;
+           resolve(result);
+       },4000);
+    });
+    return promise;
+}
+
+var p = add(100,200);
+p.then(function(result){
+    console.log("result = ", result);
+});
