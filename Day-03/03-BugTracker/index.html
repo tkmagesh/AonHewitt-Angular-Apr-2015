@@ -125,9 +125,15 @@
 
         });
 
-        bugTrackerApp.controller("bugsController", function($scope, Bug, bugStorage){
+        bugTrackerApp.controller("bugsController", function($scope, Bug, bugStorage, $http){
             $scope.newBug= "";
-            $scope.bugs = bugStorage.getAll();
+
+            $scope.bugs = [];
+            $http.get('/bugsData.json')
+                .then(function(response){
+                    $scope.bugs = response.data;
+                });
+
             $scope.addBug = function(){
                 var newBug = bugStorage.save(new Bug({
                     title : $scope.newBug,
