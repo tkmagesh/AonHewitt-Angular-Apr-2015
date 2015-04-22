@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Calculator</title>
+    <script src="angular.js"></script>
+    <script>
+        var myApp = angular.module("myApp",[]);
+
+       /* myApp.factory("calculator", function(){
+            var calculator = {
+                add : function(n1,n2){
+                    return n1 + n2;
+                },
+                subtract : function(n1,n2){
+                    return n1 - n2;
+                },
+                multiply : function(n1,n2){
+                    return n1 * n2;
+                },
+                divide : function(n1,n2){
+                    return n1 / n2;
+                }
+            };
+            return calculator;
+        });*/
+
+        myApp.service("calculator", function(){
+
+                this.add = function(n1,n2){
+                    return n1 + n2;
+                };
+                this.subtract = function(n1,n2){
+                    return n1 - n2;
+                };
+                this.multiply = function(n1,n2){
+                    return n1 * n2;
+                };
+                this.divide = function(n1,n2){
+                    return n1 / n2;
+                };
+        });
+
+        myApp.controller("calculatorController", function($scope, calculator){
+            $scope.result = 0;
+            $scope.calculate = function(){
+                var n1 = parseInt($scope.number1,10),
+                    n2 = parseInt($scope.number2,10),
+                    operation = $scope.operation;
+                $scope.result = calculator[operation](n1,n2);
+            };
+        });
+    </script>
+</head>
+<body ng-app="myApp" ng-controller="calculatorController">
+    <input type="text" ng-model="number1">
+    <input type="text" ng-model="number2">
+    <select ng-model="operation">
+        <option value="add">add</option>
+        <option value="subtract">subtract</option>
+        <option value="multiply">multiply</option>
+        <option value="divide">divide</option>
+    </select>
+    <input type="button" value="Calculate" ng-click="calculate()">
+    <div>{{result}}</div>
+</body>
+</html>
