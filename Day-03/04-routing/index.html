@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Routing Demo</title>
+    <script src="angular.js"></script>
+    <script src="angular-route.js"></script>
+    <script>
+    angular.module('myApp',['ngRoute'])
+    /*myApp.provider("myService", function(){
+        return {
+            $get : function(){
+                return {};
+            }
+        }
+    });*/
+    .config(function($routeProvider){
+       $routeProvider
+            .when('/products', {
+                templateUrl : 'productsTemplate.html',
+                controller : "productsController"
+            })
+            .when('/customers', {
+                templateUrl : 'customersTemplate.html'
+            })
+            .otherwise('/products');
+    })
+    .service("productService", function(){
+        this.getAll = function(){
+            return [
+                {id : 1, name : "Pen", cost : 10, desc : "A stationary product"},
+                      {id : 2, name : "Pencil", cost : 5, desc : "Another stationary product"},
+                      {id : 3, name : "Marker", cost : 100, desc : "A stationary product for teaching"},
+            ]
+        }
+    })
+    .controller("productsController", function($scope, productService){
+        $scope.products = productService.getAll();
+    });
+    </script>
+</head>
+<body ng-app="myApp">
+   <h1>My App</h1>
+   <a href="#/products">Products</a>
+   <a href="#/customers">Customers</a>
+    <ng-view></ng-view>
+</body>
+</html>
