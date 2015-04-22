@@ -60,8 +60,33 @@
     <script src="angular.js"></script>
     <script src="moment.js"></script>
     <script>
-        var bugTrackerApp = angular.module("bugTrackerApp",[]);
 
+        var utils = angular.module('utils',[]);
+        utils.value('defaultTrimTextLength', 20);
+
+        utils.filter('trimText', function(defaultTrimTextLength){
+            return function(data, acceptableLength){
+
+                acceptableLength = acceptableLength || defaultTrimTextLength;
+
+                return data.length > acceptableLength
+                    ? data.substr(0,acceptableLength) + "..."
+                    : data;
+            }
+        });
+
+        utils.value('momentApi', moment);
+
+        utils.filter('toMoment', function(momentApi){
+            return function(data){
+                return momentApi(data).fromNow();
+            }
+        });
+
+
+
+        var bugTrackerApp = angular.module("bugTrackerApp",["utils"]);
+        bugTrackerApp.value('defaultTrimTextLength', 50);
         bugTrackerApp.factory("Bug", function(){
             function Bug(defaults){
                 this.id = defaults.id || Date.now().toString();
@@ -75,16 +100,7 @@
             return Bug;
         });
 
-        bugTrackerApp.filter('trimText', function(){
-            return function(data, acceptableLength){
 
-                acceptableLength = acceptableLength || 20;
-
-                return data.length > acceptableLength
-                    ? data.substr(0,acceptableLength) + "..."
-                    : data;
-            }
-        });
 
         bugTrackerApp.service("bugStorage", function(Bug){
             var storage = window.localStorage;
@@ -140,11 +156,7 @@
             }
         });
 
-        bugTrackerApp.filter('toMoment', function(){
-            return function(data){
-                return moment(data).fromNow();
-            }
-        });
+
     </script>
 </head>
 <body ng-app="bugTrackerApp">
@@ -167,7 +179,7 @@
             <li ng-repeat="bug in bugs | filter:searchBug">
                 <div class="bugTitle" ng-click="toggleBug(bug)"
                 ng-class="{closed : bug.isClosed}">
-                    {{bug.title | trimText:30}}
+                    {{bug.title | trimText}}
                 </div>
                 <div class="timestamp">
                     {{bug.createdAt | toMoment}}
