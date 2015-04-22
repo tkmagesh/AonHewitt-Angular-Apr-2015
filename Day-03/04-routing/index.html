@@ -23,19 +23,31 @@
             .when('/customers', {
                 templateUrl : 'customersTemplate.html'
             })
+            .when('/products/:productId', {
+                templateUrl : 'productInfoTemplate.html',
+                controller : 'productInfoController'
+            })
             .otherwise('/products');
     })
     .service("productService", function(){
-        this.getAll = function(){
-            return [
+        var productList = [
                 {id : 1, name : "Pen", cost : 10, desc : "A stationary product"},
                       {id : 2, name : "Pencil", cost : 5, desc : "Another stationary product"},
                       {id : 3, name : "Marker", cost : 100, desc : "A stationary product for teaching"},
-            ]
-        }
+            ];
+        this.getAll = function(){
+            return productList;
+        };
+        this.getById = function(productId){
+            return productList.filter(function(p){ return p.id === productId})[0];
+        };
     })
     .controller("productsController", function($scope, productService){
         $scope.products = productService.getAll();
+    })
+    .controller("productInfoController", function($scope, productService, $routeParams){
+        var productId = parseInt($routeParams.productId,10);
+        $scope.product = productService.getById(productId);
     });
     </script>
 </head>
