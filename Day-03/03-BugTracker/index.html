@@ -124,15 +124,32 @@
             };
 
         });
+        bugTrackerApp.service("bugService", function($http, Bug, $q){
+            this.getAll = function(){
+                var defered = $q.defer();
 
-        bugTrackerApp.controller("bugsController", function($scope, Bug, bugStorage, $http){
+                $http.get('/bugsData.json')
+                    .then(function(response){
+                        var result = [];
+                        for(var i=0; i<response.data.length; i++)
+                            result.push(new Bug(response.data[i]));
+                        defered.resolve(result);
+                    });
+
+                return defered.promise;
+            }
+        });
+
+        bugTrackerApp.controller("bugsController", function($scope, Bug, bugStorage, bugService){
             $scope.newBug= "";
 
-            $scope.bugs = [];
-            $http.get('/bugsData.json')
-                .then(function(response){
-                    $scope.bugs = response.data;
+            bugService
+                .getAll()
+                .then(function(result){
+                    $scope.bugs = result;
                 });
+
+
 
             $scope.addBug = function(){
                 var newBug = bugStorage.save(new Bug({
